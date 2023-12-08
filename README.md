@@ -41,8 +41,6 @@ depending on real scenarios.
 
 ## Quickstart
 
-### Scenario 0: configure filter with header and chain
-
 Prepare table schema and filter chain.
 Table schema is a dictionary with key is column name
 and value is column type following python type.
@@ -61,5 +59,70 @@ filter_chain = [
     ".*(?P<demo_nb>\d+).*",
     "END",
 ]
+```
 
+Import, create and configure filter object in order to parse data.
+```python
+import retepy
+
+filter = retepy.Filter()
+filter.head_set(header)
+filter.filter_set(filter_chain)
+```
+
+The filter has a special configuration to handle
+the distribution of parsed data to row in result table called "delim_set"
+In the interface, we could enable/disable "start" and "end" delimiter.
+If the start option is True,
+the first text passed to filter need to match the first filter in chain
+in order to create new row, else the filter raise Error of not row available.
+The False start option automatically create new row
+to hold parsed info if needed.
+On the other hand, the end option set to True close current row
+on the text matched last filter of filter chain.
+The next parsing text will be written to new created row.
+False option does not close current row
+and the whole parsed info is updated to current row only.
+```python
+# interface
+## filter.delim_set(start:bool=None, end:bool=None)
+## Example of enable delimiter
+filter.delim_set(True, True)
+```
+
+To explain concept of delimiter, we consider filter object as a state machine
+holding a row of result table as it's state.
+There are three action possible relating to row state:
+Creating and jump to new row (1), modifying info of current row (2),
+and closing current row and jump to non row state (3).
+The **delim_set** interface allows to activate action (1) and (3)
+based on text parsed while action (2) is fired in default.
+Detail action of (1) (2) are explained above.
+
+Finally, we feed text data to filter to complete information of table
+and get out result table.
+```
+# Simple case
+## Row 1
+filter.parse("START")
+filter.parse("This is demo filter: 1")
+filter.parse(". is not valid string 2")
+filter.parse("END")
+
+# Multiple row
+## Row 2
+filter.parse("START")
+filter.parse("This is demo filter: 3")
+filter.parse("END")
+
+## Row 3
+filter.parse("START")
+filter.parse("This is demo filter: 4")
+filter.parse("END")
+
+# Invalid pass
+filter.parse("This is a valid string end: 1")
+
+# Result table
+table = filter.table_get()
 ```
