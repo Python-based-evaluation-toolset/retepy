@@ -1,3 +1,4 @@
+import re
 from collections import OrderedDict
 
 
@@ -9,9 +10,19 @@ class Filter:
 
     def __init__(self):
         self.table = {"head": OrderedDict(), "data": []}
+        self.head_nb = 0
+        self.filter_nb = 0
+        self.chain = None
+        self.curr_row = None
 
-    def head_set(self, name, type):
-        self.table["head"][name] = type
+        # row deliminator validate
+        self.start = False
+        self.end = False
+
+    def head_set(self, header: dict):
+        for k, v in header.items():
+            self.table["head"][k] = v
+        self.head_nb = len(self.table["head"])
 
     def table_get(self):
         ret = []
@@ -19,3 +30,40 @@ class Filter:
         for dat in self.table["data"]:
             ret.append(dat.copy())
         return ret
+
+    def filter_set(self, filters: list):
+        """
+        Set chain of pattern text to filter.
+        """
+        self.chain = filters
+        self.filter_nb = len(filters)
+
+    def delim_set(self, start: bool = False, end: bool = False):
+        self.start = start
+        self.end = end
+
+    def __update(self, info: dict):
+        if self.curr_row is None:
+            return
+        for idx, key in enumerate(self.table["head"].keys()):
+            if key in info:
+                self.curr_row[idx] = info[key]
+
+    def parse(self, data: str):
+        for idx, filter in enumerate(self.chain):
+            res = re.match(filter, data)
+
+            # start of row object
+            if self.curr_row is None:
+                if not self.start or (self.start and idx == 0):
+                    self.curr_row = [None for i in range(self.head_nb)]
+                    self.table["data"].append(self.curr_row)
+                else:
+                    raise Exception("No row available to receive information.")
+
+            info = res.groupdict() if res is not None else {}
+            self.__update(info)
+
+            # end of row object
+            if self.curr_row is not None and self.end and idx == (self.filter_nb - 1):
+                self.curr_row = None
