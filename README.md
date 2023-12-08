@@ -101,7 +101,7 @@ Detail action of (1) (2) are explained above.
 
 Finally, we feed text data to filter to complete information of table
 and get out result table.
-```
+```python
 # Simple case
 ## Row 1
 filter.parse("START")
