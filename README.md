@@ -43,4 +43,23 @@ depending on real scenarios.
 
 ### Scenario 0: configure filter with header and chain
 
-Coming soon...
+Prepare table schema and filter chain.
+Table schema is a dictionary with key is column name
+and value is column type following python type.
+Filter chain is a list of pattern following python **re** module.
+```python
+header = {
+    "demo_subject": str,
+    "demo_verb": str,
+    "demo_object": str,
+    "demo_nb": int,
+}
+
+filter_chain = [
+    "START",
+    "(?P<demo_subject>\w+) (?P<demo_verb>\w+) (?P<demo_object>\w+) .*",
+    ".*(?P<demo_nb>\d+).*",
+    "END",
+]
+
+```
