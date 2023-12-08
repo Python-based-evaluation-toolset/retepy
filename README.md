@@ -38,3 +38,9 @@ there are special filters to record the deliminator of row
 which is placed as first and last pattern line in filter chain.
 However, the implementation of special filter should be vary
 depending on real scenarios.
+
+## Quickstart
+
+### Scenario 0: configure filter with header and chain
+
+Coming soon...
