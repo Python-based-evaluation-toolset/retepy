@@ -24,6 +24,9 @@ class Filter:
             self.table["head"][k] = v
         self.head_nb = len(self.table["head"])
 
+    def head_get(self):
+        return list(self.table["head"].keys())
+
     def table_get(self):
         ret = []
         ret.append(list(self.table["head"].keys()))
@@ -70,7 +73,7 @@ class Filter:
             if (
                 self.curr_row is not None
                 and self.end
-                and idx == (self.filter_nb - 1)
+                    and idx == (self.filter_nb - 1)
                 and res is not None
             ):
                 self.curr_row = None
