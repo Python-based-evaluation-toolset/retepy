@@ -1,5 +1,6 @@
-import re
 from collections import OrderedDict
+import re
+import pandas as pd
 
 
 class Filter:
@@ -33,6 +34,13 @@ class Filter:
         for dat in self.table["data"]:
             ret.append(dat.copy())
         return ret
+
+    def dataframe_get(self):
+        rows = []
+        cols = list(self.table["head"].keys())
+        for dat in self.table["data"]:
+            rows.append(dat.copy())
+        return pd.DataFrame(rows, columns=cols)
 
     def filter_set(self, filters: list):
         """
@@ -73,7 +81,7 @@ class Filter:
             if (
                 self.curr_row is not None
                 and self.end
-                    and idx == (self.filter_nb - 1)
+                and idx == (self.filter_nb - 1)
                 and res is not None
             ):
                 self.curr_row = None
