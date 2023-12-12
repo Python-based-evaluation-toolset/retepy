@@ -126,3 +126,14 @@ filter.parse("This is a valid string end: 1")
 # Result table
 table = filter.table_get()
 ```
+
+## Template file (extension)
+
+It is good idea to store template in file and load it to object after.
+Then, we propose script to read and parse template file.
+Script has two parts: header and body, separating by newline.
+Header holds definition of table and body is filter chain.
+Moreover, we also support python code inside template
+which is used to define aggregate functions.
+These functions is used to process filtered table data
+to final expected table.
